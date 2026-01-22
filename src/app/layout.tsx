@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DynaPuff, Chewy } from "next/font/google";
 import "./globals.css";
-import Navigation from "./components/Navigation";
+import Navigation from "../components/Navigation";
 
 
 const dynaPuff = DynaPuff({
