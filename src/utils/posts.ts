@@ -22,16 +22,16 @@ function parseFrontmatter(fileContent: string) {
   const match = frontmatterRegex.exec(fileContent);
   const frontMatterBlock = match![1];
   const frontMatterLines = frontMatterBlock.trim().split("\n");
-  const metadata: Partial<Metadata> = {};
+  const metadata: Partial<PostMetadata> = {};
 
   frontMatterLines.forEach((line) => {
     const [key, ...valueArr] = line.split(": ");
     let value = valueArr.join(": ").trim();
     value = value.replace(/^['"](.*)['"]$/, "$1"); // Remove quotes
-    metadata[key.trim() as keyof Metadata] = value;
+    metadata[key.trim() as keyof PostMetadata] = value;
   });
 
-  return { metadata: metadata as Metadata, content: content };
+  return { metadata: metadata as PostMetadata, content: content };
 }
 
 async function readPost(slug: string) {
@@ -50,8 +50,8 @@ export async function getAllPosts(): Promise<Post[]> {
       const { content, metadata } = await readPost(slug);
       return {
         metadata: {
-          slug: slug,
           ...metadata,
+          slug: slug,
         },
         content,
       };
@@ -65,7 +65,10 @@ export async function getPostBySlug(slug: string): Promise<Post> {
   const { content, metadata } = await readPost(slug);
 
   return {
-    metadata,
+    metadata: {
+      ...metadata,
+      slug: slug,
+    },
     content,
   };
 }
