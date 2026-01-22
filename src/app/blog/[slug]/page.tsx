@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { MDXRemote, type MDXRemoteProps } from "next-mdx-remote/rsc";
-import { getPostBySlug, getAllPosts } from '../../../utils/posts';
+import { getPostBySlug, getAllPosts, formatDate } from '../../../utils/posts';
 import { CustomMDX } from '../../../components/mdx/MdxPage';
 
 export async function generateStaticParams() {
@@ -25,7 +25,7 @@ export default async function BlogPost({ params }: PageProps<'/blog/[slug]'>) {
         <article>
           <header className="mb-8">
             <h1 className="text-4xl font-bold mb-2">{title}</h1>
-            <time className="text-gray-600">{date}</time>
+            <time dateTime={date} className="text-gray-600">{formatDate(date)}</time>
           </header>
           
           <div className="prose prose-lg max-w-none">

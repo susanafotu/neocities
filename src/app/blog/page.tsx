@@ -1,4 +1,4 @@
-import { getAllPosts } from '../../utils/posts';
+import { getAllPosts, formatDate } from '../../utils/posts';
 
 export default async function BlogPage() {
   const blogPosts = await getAllPosts();
@@ -24,7 +24,7 @@ export default async function BlogPage() {
                   {title}
                 </a>
               </h2>
-              <time className="text-gray-600 text-sm">{date}</time>
+              <time dateTime={date} className="text-gray-600 text-sm">{formatDate(date)}</time>
               <p className="mt-4 text-gray-700">{excerpt}</p>
               <a 
                 href={`/blog/${slug}`}
