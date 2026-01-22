@@ -20,7 +20,13 @@
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(245deg, 
+    #FFB6C1 0%,      /* Soft pink at top */
+    #E6E6FA 25%,     /* Lavender */
+    #B0E0E6 50%,     /* Light blue */
+    #E0FFE0 75%,     /* Mint green */
+    #F0FFF0 100%     /* Light mint at bottom */
+  );
   color: var(--foreground);
   font-family: annaimn-regular, noteworthy, verdana, sans-serif; 
 }
