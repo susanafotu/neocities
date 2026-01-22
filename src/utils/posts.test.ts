@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
-import { getAllPosts, getPostBySlug, type Post, type PostMetadata } from './posts';
+import { getAllPosts, getPostBySlug, formatDate, type Post, type PostMetadata } from './posts';
 
 // Mock fs and path modules
 jest.mock('fs');
@@ -293,6 +293,28 @@ excerpt: ${slug} excerpt
 
       expect(posts[0].metadata.slug).toBe('my-awesome-post');
       expect(posts[1].metadata.slug).toBe('another_post');
+    });
+  });
+
+  describe('formatDate', () => {
+    it('should format date in US locale with weekday', () => {
+      const result = formatDate('2024-01-20');
+      expect(result).toBe('Saturday, January 20, 2024');
+    });
+
+    it('should handle different dates correctly', () => {
+      expect(formatDate('2024-12-25')).toBe('Wednesday, December 25, 2024');
+      expect(formatDate('2023-07-04')).toBe('Tuesday, July 4, 2023');
+    });
+
+    it('should handle first day of year', () => {
+      const result = formatDate('2024-01-01');
+      expect(result).toBe('Monday, January 1, 2024');
+    });
+
+    it('should handle last day of year', () => {
+      const result = formatDate('2024-12-31');
+      expect(result).toBe('Tuesday, December 31, 2024');
     });
   });
 
