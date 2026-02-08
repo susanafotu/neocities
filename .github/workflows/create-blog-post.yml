@@ -1,9 +1,8 @@
- name: Create Blog Post from Issue
-
+name: Create Blog Post from Issue
 on:
   issues:
     types: [labeled]
-
+    
 jobs:
   create-post:
     if: github.event.label.name == 'ready-to-post'
