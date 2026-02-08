@@ -59,19 +59,11 @@ jobs:
             console.log('Slug:', slug);
             console.log('Date:', date);
             console.log('Image Extension:', imageExt);
-            console.log('Content preview:', content.substring(0, 100) + '...');
+            console.log('Content preview:', (content || '').substring(0, 100) + ((content || '').length > 100 ? '...' : ''));
 
-            // Validate required fields
+            // Validate required fields (only title is required)
             if (!title) {
               core.setFailed('Title is required. Please add a title after Title:');
-              return;
-            }
-            if (!content) {
-              core.setFailed('Content is required. Please add content after Content:');
-              return;
-            }
-            if (!imageUrl) {
-              core.setFailed('Screenshot image is required');
               return;
             }
 
@@ -87,13 +79,14 @@ jobs:
             core.setOutput('image_url', imageUrl);
 
       - name: Download image
+        if: steps.parse.outputs.image_url != ''
         run: |
           SLUG=$(jq -r '.slug' parsed-data.json)
           IMAGE_URL=$(jq -r '.imageUrl' parsed-data.json)
           IMAGE_EXT=$(jq -r '.imageExt' parsed-data.json)
 
           mkdir -p public/hkia
-          curl -L "$IMAGE_URL" -o "public/hkia/${SLUG}.${IMAGE_EXT}"
+          curl -L -f "$IMAGE_URL" -o "public/hkia/${SLUG}.${IMAGE_EXT}"
           echo "Downloaded image to public/hkia/${SLUG}.${IMAGE_EXT}"
 
       - name: Generate excerpt with Claude
@@ -109,7 +102,7 @@ jobs:
             max_tokens: 100,
             messages: [{
               role: "user",
-              content: ("Generate a brief, engaging blog post excerpt (1-2 sentences, under 150 characters total) for a post titled \"" + $title + "\". The post content is: " + $content + ". Return ONLY the excerpt text, nothing else.")
+              content: ("Generate a brief, engaging blog post excerpt (1-2 sentences, under 150 characters total) for a post titled \"" + $title + "\". " + (if $content != "" then "The post content is: " + $content else "No content provided." end) + " Return ONLY the excerpt text, nothing else.")
             }]
           }' > request.json
 
@@ -135,7 +128,7 @@ jobs:
             const fs = require('fs');
             const data = JSON.parse(fs.readFileSync('parsed-data.json', 'utf8'));
 
-            const { title, date, excerpt, slug, imageExt, content } = data;
+            const { title, date, excerpt, slug, imageExt, content, imageUrl } = data;
 
             // Escape quotes in title and excerpt for YAML frontmatter
             const safeTitle = title.replace(/"/g, '\\"');
@@ -147,12 +140,14 @@ jobs:
               'date: ' + date,
               'excerpt: "' + safeExcerpt + '"',
               '---',
-              '',
-              '![Screenshot](/hkia/' + slug + '.' + imageExt + ')',
-              '',
-              content,
               ''
             ];
+            if (imageUrl) {
+              lines.push('![Screenshot](/hkia/' + slug + '.' + imageExt + ')', '');
+            }
+            if (content) {
+              lines.push(content, '');
+            }
 
             const mdxContent = lines.join('\n');
             const filePath = 'src/posts/' + slug + '.mdx';
