@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: init
+          ref: main
 
       - name: Parse issue body and create files
         id: parse
