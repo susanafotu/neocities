@@ -1,0 +1,10 @@
+{
+  "model": "claude-3-5-haiku-latest",
+  "max_tokens": 100,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Generate a brief, engaging blog post excerpt (1-2 sentences, under 150 characters total) for a post titled \"Testing new issue 2\". The post content is: here is content for testing the GHA automation\n\n<img width=\"171\" height=\"210\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/43b141c7-90ae-4cd9-996a-3862ac49e7bd\" /> Return ONLY the excerpt text, nothing else."
+    }
+  ]
+}
