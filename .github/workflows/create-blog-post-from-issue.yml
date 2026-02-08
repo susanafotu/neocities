@@ -27,9 +27,20 @@ jobs:
             const fs = require('fs');
             const body = context.payload.issue.body;
 
-            // Extract image URL from markdown image syntax
-            const imgMatch = body.match(/!\[screenshot\]\((.*?)\)/);
-            const imageUrl = imgMatch ? imgMatch[1] : '';
+            // Extract image URL - support both markdown and HTML img tags
+            let imageUrl = '';
+
+            // Try markdown image syntax first: ![alt](url)
+            const mdImgMatch = body.match(/!\[.*?\]\((https?:\/\/[^\s)]+)\)/);
+            if (mdImgMatch) {
+              imageUrl = mdImgMatch[1];
+            } else {
+              // Try HTML img tag: <img ... src="url" ... />
+              const htmlImgMatch = body.match(/<img[^>]+src=["']([^"']+)["'][^>]*\/?>/i);
+              if (htmlImgMatch) {
+                imageUrl = htmlImgMatch[1];
+              }
+            }
 
             // Extract title (line after Title:)
             const titleMatch = body.match(/Title:\s*([^\n]+)/);
@@ -49,9 +60,10 @@ jobs:
             // Get today's date in YYYY-MM-DD format
             const date = new Date().toISOString().split('T')[0];
 
-            // Determine image extension from URL
+            // Determine image extension from URL (default to jpeg for GitHub user-attachment URLs)
             const extMatch = imageUrl.match(/\.(jpg|jpeg|png|gif|webp)(?:\?|$)/i);
             const imageExt = extMatch ? extMatch[1].toLowerCase() : 'jpeg';
+            // Note: GitHub user-attachment URLs have no extension, so we default to jpeg
 
             console.log('Parsed values:');
             console.log('Image URL:', imageUrl);
@@ -98,7 +110,7 @@ jobs:
 
           # Create the request payload
           jq -n --arg title "$TITLE" --arg content "$CONTENT" '{
-            model: "claude-3-5-haiku-latest",
+            model: "claude-3-5-haiku-20241022",
             max_tokens: 100,
             messages: [{
               role: "user",
