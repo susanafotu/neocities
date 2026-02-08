@@ -32,11 +32,11 @@ jobs:
             const imageUrl = imgMatch ? imgMatch[1] : '';
 
             // Extract title (line after **Title:**)
-            const titleMatch = body.match(/\*\*Title:\*\*\s*\n?\s*(.+)/);
+            const titleMatch = body.match((?<=Title:\s).*);
             const title = titleMatch ? titleMatch[1].trim() : '';
 
             // Extract content (after **Content:** until --- or end)
-            const contentMatch = body.match(/\*\*Content:\*\*\s*\n([\s\S]*?)(?=\n---|\n\*Add the|$)/);
+            const contentMatch = body.match((?<=Content:\s).*);
             const content = contentMatch ? contentMatch[1].trim() : '';
 
             // Generate slug from title
