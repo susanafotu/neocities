@@ -1,8 +1,8 @@
 {
-  "imageUrl": "",
-  "title": "Testing new issue 2",
-  "content": "here is content for testing the GHA automation\n\n<img width=\"171\" height=\"210\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/43b141c7-90ae-4cd9-996a-3862ac49e7bd\" />",
-  "slug": "testing-new-issue-2",
+  "imageUrl": "https://github.com/user-attachments/assets/0d4bac5c-ca5b-4112-ac1d-8f788e53a25d",
+  "title": "Let's see if screenshot handing works",
+  "content": "Good luck!\n\n<img width=\"80\" height=\"80\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/0d4bac5c-ca5b-4112-ac1d-8f788e53a25d\" />",
+  "slug": "lets-see-if-screenshot-handing-works",
   "date": "2026-02-08",
   "imageExt": "jpeg",
   "excerpt": "A new blog post "
