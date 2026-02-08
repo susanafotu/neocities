@@ -31,12 +31,12 @@ jobs:
             const imgMatch = body.match(/!\[screenshot\]\((.*?)\)/);
             const imageUrl = imgMatch ? imgMatch[1] : '';
 
-            // Extract title (line after **Title:**)
-            const titleMatch = body.match((?<=Title:\s).*);
+            // Extract title (line after Title:)
+            const titleMatch = body.match(/Title:\s*([^\n]+)/);
             const title = titleMatch ? titleMatch[1].trim() : '';
 
-            // Extract content (after **Content:** until --- or end)
-            const contentMatch = body.match((?<=Content:\s).*);
+            // Extract content (after Content:)
+            const contentMatch = body.match(/Content:\s*([\s\S]*)/);
             const content = contentMatch ? contentMatch[1].trim() : '';
 
             // Generate slug from title
@@ -63,11 +63,11 @@ jobs:
 
             // Validate required fields
             if (!title) {
-              core.setFailed('Title is required. Please add a title after **Title:**');
+              core.setFailed('Title is required. Please add a title after Title:');
               return;
             }
             if (!content) {
-              core.setFailed('Content is required. Please add content after **Content:**');
+              core.setFailed('Content is required. Please add content after Content:');
               return;
             }
             if (!imageUrl) {
@@ -177,7 +177,7 @@ jobs:
 
             Closes #${{ github.event.issue.number }}
           commit-message: "feat: add blog post - ${{ steps.parse.outputs.title }}"
-          base: init
+          base: main
 
       - name: Comment and close issue
         uses: actions/github-script@v7
