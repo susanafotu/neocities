@@ -222,7 +222,13 @@ jobs:
             ## New Blog Post
 
             **Title:** ${{ steps.parse.outputs.title }}
+            **Excerpt:** ${{ steps.parse.outputs.excerpt }}
             **Date:** ${{ steps.parse.outputs.date }}
+            **Content:** ${{ steps.parse.outputs.content }}
+
+            ### Preview
+
+            ![Screenshot](${{ steps.parse.outputs.image_url }})
 
             ---
 
