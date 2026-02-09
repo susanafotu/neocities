@@ -1,0 +1,10 @@
+{
+  "model": "claude-haiku-4-5",
+  "max_tokens": 100,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Generate a brief, engaging blog post excerpt (1-2 sentences, under 150 characters total) for a post titled \"More testing.\". The post content is: Now with Gudetama. \n\n<img width=\"128\" height=\"128\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/1d576f2f-a130-4ef0-9788-ecadc49ece6d\" /> Return ONLY the excerpt text, nothing else."
+    }
+  ]
+}
