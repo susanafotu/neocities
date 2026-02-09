@@ -203,7 +203,7 @@ jobs:
 
             // Add image and content
             if (imageUrl) lines.push(`![Screenshot](/hkia/${slug}.${imageExt})`, '');
-            if (content) lines.push(content, '');
+            if (content) lines.push(content, '', safeExcerpt, '');
 
             // Write MDX file
             const filePath = `src/posts/${slug}.mdx`;
