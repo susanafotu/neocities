@@ -89,6 +89,7 @@ jobs:
             core.setOutput('date', date);
             core.setOutput('image_ext', imageExt);
             core.setOutput('image_url', imageUrl);
+            core.setOutput('content', content);
 
       - name: Download image
         if: steps.parse.outputs.image_url != ''
@@ -102,6 +103,7 @@ jobs:
           echo "Downloaded: public/hkia/${SLUG}.${IMAGE_EXT}"
 
       - name: Generate excerpt with Claude
+        id: excerpt
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -175,6 +177,9 @@ jobs:
           jq --arg excerpt "$EXCERPT" '.excerpt = $excerpt' parsed-data.json > temp.json && mv temp.json parsed-data.json
 
           echo "✓ Generated excerpt: $EXCERPT"
+          
+          # Set as output for use in later steps
+          echo "excerpt=$EXCERPT" >> $GITHUB_OUTPUT
 
       - name: Create MDX file
         uses: actions/github-script@v7
@@ -219,14 +224,13 @@ jobs:
           branch: post/${{ steps.parse.outputs.slug }}
           title: "New post: ${{ steps.parse.outputs.title }}"
           body: |
-            ## New Blog Post
+            ## New Blog Post Preview
 
             **Title:** ${{ steps.parse.outputs.title }}
-            **Excerpt:** ${{ steps.parse.outputs.excerpt }}
+            **Excerpt:** ${{ steps.excerpt.outputs.excerpt }}
             **Date:** ${{ steps.parse.outputs.date }}
             **Content:** ${{ steps.parse.outputs.content }}
 
-            ### Preview
 
             ![Screenshot](${{ steps.parse.outputs.image_url }})
 
