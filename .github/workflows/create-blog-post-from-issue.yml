@@ -93,13 +93,13 @@ jobs:
       - name: Download image
         if: steps.parse.outputs.image_url != ''
         run: |
+          mkdir -p public/hkia
           SLUG=$(jq -r '.slug' parsed-data.json)
           IMAGE_URL=$(jq -r '.imageUrl' parsed-data.json)
           IMAGE_EXT=$(jq -r '.imageExt' parsed-data.json)
-
-          mkdir -p public/hkia
+          
           curl -L -f "$IMAGE_URL" -o "public/hkia/${SLUG}.${IMAGE_EXT}"
-          echo "Downloaded image to public/hkia/${SLUG}.${IMAGE_EXT}"
+          echo "Downloaded: public/hkia/${SLUG}.${IMAGE_EXT}"
 
       - name: Generate excerpt with Claude
         env:
@@ -108,9 +108,6 @@ jobs:
           TITLE=$(jq -r '.title' parsed-data.json)
           CONTENT=$(jq -r '.content' parsed-data.json)
 
-          echo "Title: $TITLE"
-          echo "Content preview: ${CONTENT:0:100}..."
-
           # Create prompt text
           if [ -n "$CONTENT" ]; then
             PROMPT="Generate a brief, engaging blog post excerpt (1-2 sentences, under 150 characters total) for a post titled \"$TITLE\". The post content is: $CONTENT Return ONLY the excerpt text, nothing else."
@@ -118,7 +115,7 @@ jobs:
             PROMPT="Generate a brief, engaging blog post excerpt (1-2 sentences, under 150 characters total) for a post titled \"$TITLE\". No content provided. Return ONLY the excerpt text, nothing else."
           fi
 
-          # Create the request payload using jq with proper escaping
+          # Create the request payload
           jq -n \
             --arg prompt "$PROMPT" \
             '{
@@ -130,15 +127,12 @@ jobs:
               }]
             }' > request.json
 
-          # Check if request.json was created successfully
           if [ ! -f request.json ] || [ ! -s request.json ]; then
-            echo "ERROR: request.json was not created or is empty"
+            echo "ERROR: Failed to create request.json"
             exit 1
           fi
 
-          echo "request.json created successfully, size: $(wc -c < request.json) bytes"
-
-          # Make API call with error checking
+          # Call Claude API
           HTTP_CODE=$(curl -s -w "%{http_code}" -o response.json \
             https://api.anthropic.com/v1/messages \
             -H "x-api-key: $ANTHROPIC_API_KEY" \
@@ -146,20 +140,14 @@ jobs:
             -H "content-type: application/json" \
             -d @request.json)
 
-          echo "HTTP Status Code: $HTTP_CODE"
-
           if [ "$HTTP_CODE" -ne 200 ]; then
             echo "ERROR: API call failed with status $HTTP_CODE"
             cat response.json
             exit 1
           fi
 
-          RESPONSE=$(cat response.json)
-          echo "API Response: $RESPONSE"
-
-          EXCERPT=$(echo "$RESPONSE" | jq -r '.content[0].text // "A new blog post"' | tr '\n' ' ' | head -c 150)
-
-          # Add excerpt to our data file
+          # Extract excerpt and add to parsed data
+          EXCERPT=$(jq -r '.content[0].text // "A new blog post"' response.json | tr '\n' ' ' | head -c 150)
           jq --arg excerpt "$EXCERPT" '.excerpt = $excerpt' parsed-data.json > temp.json && mv temp.json parsed-data.json
 
           echo "Generated excerpt: $EXCERPT"
@@ -170,39 +158,29 @@ jobs:
           script: |
             const fs = require('fs');
             const data = JSON.parse(fs.readFileSync('parsed-data.json', 'utf8'));
-
             const { title, date, excerpt, slug, imageExt, content, imageUrl } = data;
 
-            // Remove temporary files so they are not committed
-            for (const f of ['parsed-data.json', 'request.json', 'response.json']) {
-              try { fs.unlinkSync(f); } catch (e) {}
-            }
-
-            // Escape quotes in title and excerpt for YAML frontmatter
+            // Build frontmatter
             const safeTitle = title.replace(/"/g, '\\"');
             const safeExcerpt = (excerpt || 'A new blog post').replace(/"/g, '\\"');
 
             const lines = [
               '---',
-              'title: "' + safeTitle + '"',
-              'date: ' + date,
-              'excerpt: "' + safeExcerpt + '"',
+              `title: "${safeTitle}"`,
+              `date: ${date}`,
+              `excerpt: "${safeExcerpt}"`,
               '---',
               ''
             ];
-            if (imageUrl) {
-              lines.push('![Screenshot](/hkia/' + slug + '.' + imageExt + ')', '');
-            }
-            if (content) {
-              lines.push(content, '');
-            }
 
-            const mdxContent = lines.join('\n');
-            const filePath = 'src/posts/' + slug + '.mdx';
-            fs.writeFileSync(filePath, mdxContent);
-            console.log('Created ' + filePath);
-            console.log('Content:');
-            console.log(mdxContent);
+            // Add image and content
+            if (imageUrl) lines.push(`![Screenshot](/hkia/${slug}.${imageExt})`, '');
+            if (content) lines.push(content, '');
+
+            // Write MDX file
+            const filePath = `src/posts/${slug}.mdx`;
+            fs.writeFileSync(filePath, lines.join('\n'));
+            console.log(`Created ${filePath}`);
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
@@ -250,3 +228,10 @@ jobs:
               issue_number: context.issue.number,
               state: 'closed'
             });
+
+      - name: Cleanup temporary files
+        if: always()
+        run: |
+          echo "Cleaning up temporary files..."
+          rm -f parsed-data.json request.json response.json temp.json
+          echo "Cleanup complete"
