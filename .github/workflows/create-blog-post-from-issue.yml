@@ -175,6 +175,10 @@ jobs:
           jq --arg excerpt "$EXCERPT" '.excerpt = $excerpt' parsed-data.json > temp.json && mv temp.json parsed-data.json
 
           echo "✓ Generated excerpt: $EXCERPT"
+          echo "=== Contents of parsed-data.json ==="
+          cat parsed-data.json
+          echo "=== Contents of response.json ==="
+          cat response.json
 
       - name: Create MDX file
         uses: actions/github-script@v7
