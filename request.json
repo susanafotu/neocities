@@ -1,0 +1,10 @@
+{
+  "model": "claude-haiku-4-5",
+  "max_tokens": 100,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Generate a brief, engaging blog post excerpt (1-2 sentences, under 150 characters total) for a post titled \"Here we go again\". The post content is: Now we're testing more \n\n<img width=\"128\" height=\"128\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/418c5786-05e5-4e2c-8d73-46982cf732a2\" /> Return ONLY the excerpt text, nothing else."
+    }
+  ]
+}
