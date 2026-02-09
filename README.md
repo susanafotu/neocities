@@ -1,6 +1,6 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-A blogsite playground where I'll aim to sharpen and maintain my web development skills. 
+A blogsite playground where I aim to sharpen and maintain my web development skills. 
 
 <!--
 ## Getting Started
