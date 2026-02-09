@@ -2,6 +2,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 A blogsite playground where I aim to sharpen and maintain my web development skills. 
 
+Current features
+- Create new blog posts semi-automation
+-   Submit an isue using the blog post template, and GHA will intake and process content + images into a new blog post mdx file.
+
+
+ 
+
 <!--
 ## Getting Started
 
