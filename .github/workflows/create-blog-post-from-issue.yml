@@ -231,9 +231,6 @@ jobs:
             **Date:** ${{ steps.parse.outputs.date }}
             **Content:** ${{ steps.parse.outputs.content }}
 
-
-            ![Screenshot](${{ steps.parse.outputs.image_url }})
-
             ---
 
             Closes #${{ github.event.issue.number }}
