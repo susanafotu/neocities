@@ -189,6 +189,15 @@ jobs:
             const data = JSON.parse(fs.readFileSync('parsed-data.json', 'utf8'));
             const { title, date, excerpt, slug, imageExt, content, imageUrl } = data;
 
+            // Strip image tags from content (both HTML and Markdown)
+            let cleanContent = content || '';
+            // Remove HTML img tags: <img ... /> or <img ...>...</img>
+            cleanContent = cleanContent.replace(/<img[^>]*\/?>/gi, '');
+            // Remove markdown image syntax: ![alt](url)
+            cleanContent = cleanContent.replace(/!\[.*?\]\(.*?\)/g, '');
+            // Clean up extra whitespace
+            cleanContent = cleanContent.trim();
+
             // Build frontmatter
             const safeTitle = title.replace(/"/g, '\\"');
             const safeExcerpt = (excerpt || 'A new blog post').replace(/"/g, '\\"');
@@ -204,8 +213,7 @@ jobs:
 
             // Add image and content
             if (imageUrl) lines.push(`![Screenshot](/hkia/${slug}.${imageExt})`, '');
-            const contentWithExcerpt = `${content}\n\n${excerpt}`;
-            if (contentWithExcerpt) lines.push(contentWithExcerpt, '');
+            if (cleanContent) lines.push(cleanContent, '');
 
             // Write MDX file
             const filePath = `src/posts/${slug}.mdx`;
