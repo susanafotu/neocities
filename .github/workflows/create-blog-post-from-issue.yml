@@ -116,7 +116,7 @@ jobs:
               role: "user",
               content: ("Generate a brief, engaging blog post excerpt (1-2 sentences, under 150 characters total) for a post titled \"" + $title + "\". " + (if $content != "" then "The post content is: " + $content else "No content provided." end) + " Return ONLY the excerpt text, nothing else.")
             }]
-          }'
+          }' > request.json
 
           RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
             -H "x-api-key: $ANTHROPIC_API_KEY" \
@@ -141,7 +141,11 @@ jobs:
             const data = JSON.parse(fs.readFileSync('parsed-data.json', 'utf8'));
 
             const { title, date, excerpt, slug, imageExt, content, imageUrl } = data;
-            rm parsed-data.json
+
+            // Remove temporary files so they are not committed
+            for (const f of ['parsed-data.json', 'request.json']) {
+              try { fs.unlinkSync(f); } catch (e) {}
+            }
 
             // Escape quotes in title and excerpt for YAML frontmatter
             const safeTitle = title.replace(/"/g, '\\"');
