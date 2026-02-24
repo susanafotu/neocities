@@ -1,41 +1,34 @@
-import { getAllPosts, formatDate } from '../../utils/posts';
+import Image from "next/image";
+import PostPreview from "../../components/blog/PostPreview";
+import { getAllPosts } from "../../utils/posts";
 
 export default async function BlogPage() {
   const blogPosts = await getAllPosts();
   return (
     <div className="min-h-screen p-8">
-      <main className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8">Blog</h1>
-        <p className="text-lg mb-8">
-          Thoughts, ideas, and creative explorations.
-        </p>
-        
-        <div className="space-y-8">
+      <div className="mx-auto max-w-4xl">
+        <div className="flex flex-row gap-4 pb-12"> 
+          <div className="flex-1 flex flex-col gap-2 self-center border-b pb-5">
+          <h1 className="mb-2 text-4xl font-bold">Island Updates</h1>
+          <p className="mb-8 pb-2 text-lg">
+            Moments, stories, bugs, and other updates from my adventures in
+            Hello Kitty Island Adventure.
+          </p>
+          </div>
+          <div className="flex-1 flex flex-col gap-2">
+            <Image src="/hkia/hkia-avi-cloud-gude.jpeg" alt="Island Updates" width={500} height={500} className="rounded-md" />
+          </div>
+          
+        </div>
+
+        <main className="space-y-8">
           {blogPosts.map((post) => {
             const { metadata } = post;
-            const { title, date, excerpt, slug } = metadata;
-            return (
-            <article key={slug} className="border-b pb-8">
-              <h2 className="text-2xl font-semibold mb-2">
-                <a 
-                  href={`/blog/${slug}`}
-                  className="hover:text-blue-600 transition-colors"
-                >
-                  {title}
-                </a>
-              </h2>
-              <time dateTime={date} className="text-gray-600 text-sm">{formatDate(date)}</time>
-              <p className="mt-4 text-gray-700">{excerpt}</p>
-              <a 
-                href={`/blog/${slug}`}
-                className="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Read more →
-              </a>
-            </article>
-          )})}
-        </div>
-      </main>
+            const { slug } = metadata;
+            return <PostPreview key={slug} post={post} />;
+          })}
+        </main>
+      </div>
     </div>
   );
 }

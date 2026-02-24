@@ -27,6 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="../public/cursors/butt-up-gudetama-cursor.png" />
+      </head>
       <body
         className={`${dynaPuff.variable} ${chewy.variable} antialiased`}
       >

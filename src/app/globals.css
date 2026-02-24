@@ -27,6 +27,6 @@ body {
     #E0FFE0 75%,     /* Mint green */
     #F0FFF0 100%     /* Light mint at bottom */
   );
-  color: var(--foreground);
+  /* color: var(--foreground); */
   font-family: annaimn-regular, noteworthy, verdana, sans-serif; 
 }

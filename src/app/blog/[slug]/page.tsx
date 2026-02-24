@@ -22,8 +22,13 @@ export default async function BlogPost({ params }: PageProps<'/blog/[slug]'>) {
   return (
     <div className="min-h-screen p-8">
       <main className="max-w-4xl mx-auto">
+      <div className="pb-8">
+          <a href="/blog" className="text-blue-800 hover:text-blue-800 font-bold rounded-md px-2 py-1 border border-blue-900 hover:border-blue-600 bg-blue-100 hover:bg-blue-200">
+            ← Back to blog list
+          </a>
+        </div>
         <article>
-          <header className="mb-8">
+          <header className="mb-8 border-b pb-2">
             <h1 className="text-4xl font-bold mb-2">{title}</h1>
             <time dateTime={date} className="text-gray-600">{formatDate(date)}</time>
           </header>
@@ -32,12 +37,7 @@ export default async function BlogPost({ params }: PageProps<'/blog/[slug]'>) {
             <MDXRemote source={content}/>
           </div>
         </article>
-        
-        <div className="mt-8 pt-8 border-t">
-          <a href="/blog" className="text-blue-600 hover:text-blue-800">
-            ← Back to Blog
-          </a>
-        </div>
+
       </main>
     </div>
   );

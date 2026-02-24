@@ -1,6 +1,5 @@
 import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
-import { serialize } from 'next-mdx-remote/serialize';
 
 export interface PostMetadata {
   title: string;
